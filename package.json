@@ -1,0 +1,40 @@
+{
+	"name": "jsonata-transforms",
+	"version": "0.0.0",
+	"description": "Various JSONata transforms",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node ./app.js",
+		"lint": "eslint **/*.js",
+		"preversion": "npm run lint",
+		"postversion": "git push && git push --tags && npm run changelog && git push ",
+		"postinstall": "",
+		"changelog": "rimraf CHANGELOG.md && auto-changelog --template keepachangelog && git add . && git commit . -m changelog && git push",
+		"changelog2": "rimraf CHANGELOG.md && auto-changelog --template keepachangelog"
+	},
+	"keywords": [
+		"jsonata"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/martinholden-skillsoft/jsonata-transforms.git"
+	},
+	"author": {
+		"name": "Martin Holden",
+		"email": "12408585+martinholden-skillsoft@users.noreply.github.com"
+	},
+	"license": "MIT",
+	"dependencies": {},
+	"devDependencies": {
+		"auto-changelog": "^2.2.1",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^7.14.0",
+		"eslint-config-airbnb-base": "^14.2.1",
+		"eslint-config-prettier": "^6.15.0",
+		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-prettier": "^3.1.2",
+		"prettier": "^2.2.0",
+		"rimraf": "^3.0.2"
+	}
+}

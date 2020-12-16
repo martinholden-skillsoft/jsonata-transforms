@@ -1,0 +1,46 @@
+$.(
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+    $comment := 'TRANSFORM FOR Totara 11.x Course Completions Upload POC';
+    $comment := 'See https://help.totaralearning.com/display/TL110/Upload+Course+Completions';
+    $comment := 'Author: martinholden-skillsoft';
+    $comment := 'Date: 28-AUG-2020';
+    $comment := 'Dependency: Uses functions from https://www.npmjs.com/package/jsonata-extended';
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+    $comment := 'START OF TRANSFORM';
+
+    $comment := '*******************************************************';
+    $comment := 'Transform the basic data, uses the CONSTANTS specified above';
+
+    $comment := 'The list of required columns in order as per https://help.totaralearning.com/display/TL110/Upload+Course+Completions';
+    $comment := 'and the defaults.';
+    $comment := 'By default we need all columns but courseshortname can be blank as we will use the courseidnumber to identify the courses';
+
+    $required_columns := {
+      'username': '',
+      'courseshortname': '',
+      'courseidnumber': '',
+      'completiondate': '',
+      'grade': ''
+    };
+
+    $comment := 'completiondate is return as string in format yyyy-mm-dd so during import this needs to be specified in Totara';
+    $comment := 'grade is a mandatory field, if the Percipio content is completed, but the item had no score we should return 0';
+    $transformed_data := (
+        $.{
+            'username': userId,
+            'courseidnumber': contentUuid,
+            'completiondate': completedDate ? $substringBefore(completedDate,'T') : '',
+            'grade': highScore ? highScore : 0
+          }
+    );
+
+    $comment := '*******************************************************';
+    $comment := 'Merge the $required_columns object and the $transformed_data';
+
+    $merge([$required_columns, $transformed_data]);
+)

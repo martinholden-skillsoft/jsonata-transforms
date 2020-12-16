@@ -1,0 +1,102 @@
+$.(
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+    $comment := 'TRANSFORM FOR COLLECTION DATA';
+    $comment := 'Author: martinholden-skillsoft';
+    $comment := 'Date: 24-NOV-2020';
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+
+    $comment := 'The maximum number of Collection Columns per row, if there are more collections';
+    $comment := 'then an array of result objects for each input record is returned.';
+    $comment := 'So as example if item has 10 collections and we specify 3, we will get 4 records.';
+    $comment := 'First has Collections 1,2,3, next has 4,5,6 etc';
+    $collectionMaxColumns := 3;
+    $comment := 'The prefix for the column name';
+    $collectionPrefix := 'COLLECTION_';
+    $comment := 'The length of the nnn value zero padded, -2 means pad to 2 characters by adding 0 to left';
+    $collectionPadWidth := -2;
+
+    $collectionColumns := $map([0..$collectionMaxColumns-1], function($v, $i) {(
+                { $collectionPrefix & $pad($string($i+1), $collectionPadWidth, '0') : '' }
+        )});
+
+    $comment := '*******************************************************';
+    $comment := 'Transform the basic data';
+    $required_columns := {
+        'ID': '',
+        'TITLE': '',
+        'COLLECTIONCOUNT': ''
+    };
+
+    $required_columns:= $merge([$required_columns,$collectionColumns]);
+
+    $original_transformed_data := (
+        $.{
+            'ID': id,
+            'TITLE': localizedMetadata[0].title,
+            'COLLECTIONCOUNT': $count(associations.collections)
+          }
+    );
+
+    $comment := '*******************************************************';
+    $comment := 'Merge the $required_columns object and the $original_transformed_data';
+    $merged_transformed_data := $merge([$required_columns, $original_transformed_data]);
+
+    $comment := '*******************************************************';
+    $comment := '* Converts an array of collection strings to a grouped';
+    $comment := '* array of objects';
+    $comment := '* with $groupsize COLLECTION_n values';
+    $comment := '* @param {array} $source';
+    $comment := '* @param {number} [$groupsize=10] - The number of items in each group';
+    $comment := '* @param {string} [$prefix=COLLECTION_] - The string prefix for each key';
+    $comment := '* @param {number} [$padwidth=-2] - Total width of number value with zero padding.';
+    $comment := '*                 If a positive number, padded to the right; if negative, padded to the left';
+    $comment := '*                 Default of -2 gives 01, 02 etc.';
+    $comment := '*                 See https://docs.jsonata.org/string-functions#pad';
+    $comment := '* @returns {array[]}';
+    $comment := '*******************************************************';
+    $getCollectionChunks := function($source, $groupsize, $prefix, $padwidth) {(
+        $groupsize := $groupsize ? $groupsize : 10;
+        $arrayChunks := $ceil($count($source)/ $groupsize);
+        $prefix := $prefix ? $prefix : 'COLLECTION_';
+        $padwidth := $padwidth ? $padwidth : -2;
+        $map([0..$arrayChunks], function($v, $i) {(
+            $start := $v * $groupsize;
+            $end := $start + $groupsize;
+            $merge($map(
+                $filter($source, function($v, $i) {(
+                    $i >= $start and $i < $end
+                )})
+                , function ($v, $i, $a) {(
+                { $prefix & $pad($string($i+1), $padwidth, '0') : $v }
+            )}));
+        )});
+    )};
+
+    $comment := 'Array of strings for collections to allow in output';
+    $allowedCollections := [];
+
+    $comment := 'The collections for item or empty array';
+    $foundCollections := $count(associations.collections) > 0 ? associations.collections : [];
+
+    $comment := 'The filtered collections for item, only those in $allowedCollections';
+    $filteredCollections := $count($allowedCollections) > 0 ? $filter($foundCollections, function($v, $i, $a) {
+            $v in $allowedCollections
+    }) : $foundCollections;
+
+    $comment := 'If filtered collections for item is empty, add Default as the Collections array';
+    $comment := 'Array is Alpha Sorted';
+    $filteredCollections := $count($filteredCollections) > 0 ? $sort($filteredCollections) : ['Default'];
+
+    $comment:= 'We use $map to process all items returned by the $getCollectionChunks';
+    $transformed_data := $map($getCollectionChunks($filteredCollections, $collectionMaxColumns, $collectionPrefix, $collectionPadWidth), function ($v, $i, $a){(
+        $comment:= '$v is the object with COLLECTION_1 thru COLLECTION_n';
+        $comment:= 'Merging this object with the already transformed data overwrites the $collectionPrefix fields';
+        $merge([$merged_transformed_data, $v]);
+    )}
+    );
+
+    $comment:= 'If the returned $transformed_data is empty, perhaps because nothing in  $filteredCollections use the basic data';
+    $transformed_data ?  $transformed_data : $merged_transformed_data;
+)

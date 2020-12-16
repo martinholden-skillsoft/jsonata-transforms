@@ -1,0 +1,86 @@
+$.(
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+    $comment := 'TRANSFORM FOR EDCAST';
+    $comment := 'Author: Martin Holden';
+    $comment := 'Date: 18-NOV-2020';
+    $comment := '*******************************************************';
+
+
+    $edcastCleanString := function ($source) {(
+        $defaultReplacements := [
+            {
+            'search': '|',
+            'replace': ''
+            },
+            {
+            'search': '\r\n',
+            'replace': '&#13;&#10;'
+            },
+            {
+            'search': /[©]|&(#169;|copy;)/,
+            'replace': ''
+            },
+            {
+            'search': /[®]|&(#174;|reg;)/,
+            'replace': ''
+            },
+            {
+            'search': /&#9786;/,
+            'replace': ':-)'
+            }
+        ];
+
+        $replacements := $cleaners ? $cleaners : $defaultReplacements;
+
+        $result := $source;
+        $result := $reduce($replacements, function ($accum, $value) {(
+                $match := $substring($value.search,0,1) = '/' ? $eval($value.search) : $value.search;
+                $result := $replace($accum, $match, $value.replace);
+            )}, $result);
+        $result;
+    )};
+
+    $edcastDescription := function () {(
+        $result := $edcastCleanString($formatSummary('NO_DISPLAY_LABEL', 4000, $));
+        $result;
+    )};
+
+    $edcastDuration := function () {(
+        $result := $join([$string($round($isoDurationToMinutes(duration))), 'mins'], ' ');
+        $result;
+    )};
+
+    $edcastLocale := function () {(
+        $comment := 'Use full language-locale';
+        $result := $lookup($locales, localeCodes[0]);
+        $comment := 'Use just language';
+        $result := $result ? $result : $lookup($locales, $split(localeCodes[0],'-')[0]);
+        $comment := 'Use en as default';
+        $result := $result ? $result : 'en';
+        $result;
+    )};
+
+    $edcastKeywords := function() {(
+        $result := $edcastCleanString($sabaKeywordsArray($));
+        $result;
+    )};
+
+    $transformed_data := $.{
+        'id': xapiActivityId,
+        'test': $edcastCleanString(localizedMetadata[0].description),
+        'title': $formatTitle($titleFormat, '', 300, $),
+        'description': $edcastDescription(),
+        'image_url': imageUrl,
+        'deeplink_url': link,
+        'keywords': $edcastKeywords(),
+        'duration': $edcastDuration(),
+        'metadata': '',
+        'archive': lifecycle.status = 'ACTIVE' ? 'N' : 'Y',
+        'prices_data': '',
+        'readable_card_type': contentType.displayLabel,
+        'language': $edcastLocale()
+    };
+
+    $merge([$transformed_data, $extraColumns]);
+)

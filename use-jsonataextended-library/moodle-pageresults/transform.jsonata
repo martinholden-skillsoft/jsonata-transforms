@@ -1,0 +1,37 @@
+$.(
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+    $comment := 'TRANSFORM FOR MOODLE 3.x Percipio Course Results Import';
+    $comment := 'See https://moodle.org/plugins/tool_uploadpageresults';
+    $comment := 'Author: martinholden-skillsoft';
+    $comment := 'Date: 18-SEP-2020';
+    $comment := 'Dependency: Uses functions from https://www.npmjs.com/package/jsonata-extended';
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+
+    $comment := '*******************************************************';
+    $comment := '*******************************************************';
+    $comment := 'START OF TRANSFORM';
+
+    $comment := '*******************************************************';
+    $comment := 'Transform the basic data, uses the CONSTANTS specified above';
+
+    $comment := 'The list of required columns in order as per https://github.com/lushonline/moodle-tool_uploadpageresults/wiki/Format-of-Import-File';
+    $comment := 'as at date of this transform.';
+    $required_columns := {
+        'COURSE_IDNUMBER': '',
+        'USER_USERNAME': ''
+    };
+
+    $transformed_data := (
+        $.{
+            'COURSE_IDNUMBER': contentUuid,
+            'USER_USERNAME': userId
+          }
+    );
+
+    $comment := '*******************************************************';
+    $comment := 'Merge the $required_columns object and the $transformed_data';
+
+    $merge([$required_columns, $transformed_data]);
+)

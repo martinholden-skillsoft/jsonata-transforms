@@ -1,0 +1,23 @@
+{
+  "titleFormat": {
+    "type": "NONE",
+    "technology": "PREFIX"
+  },
+  "extraColumns": {},
+  "locales": {
+    "de": "de",
+    "de-DE": "de",
+    "en": "en",
+    "es": "es",
+    "es-DO": "es",
+    "fr": "fr",
+    "fr-FR": "fr",
+    "it": "it",
+    "ja": "ja",
+    "ja-JP": "ja",
+    "pt": "pt",
+    "pt-BR": "pt-BR",
+    "zh": "zh",
+    "zh-CN": "zh"
+  }
+}

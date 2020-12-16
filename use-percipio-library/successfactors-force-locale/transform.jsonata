@@ -1,0 +1,58 @@
+$.(
+
+    $comment := 'Set the default Percipio Locale to use for all the transform';
+    $forceLocale := 'fr-FR';
+
+    $comment := 'Get the localizedMetadata for the specified locale, or return localizedMetadata[0] values';
+    $getlocalizedMetadata := function($locale) {(
+        $localizedMetadata := $filter(localizedMetadata, function($v, $i, $a) {
+            ($lowercase($v.localeCode) = $lowercase($locale)) or ($substringBefore($lowercase($v.localeCode),'-') = $substringBefore($lowercase($locale),'-'))
+        });
+
+        $defaultMetadata := $merge([localizedMetadata[0],{ 'localeCode': $locale }]);
+        $localizedMetadata ? $localizedMetadata : $defaultMetadata;
+    )};
+
+    $comment := 'Create a copy of the input with only the forceLocale metadata';
+    $forceLocaleData := {
+        'localeCodes' : $append([],$forceLocale),
+        'localizedMetadata' : $append([],$getlocalizedMetadata($forceLocale))
+    };
+    $forceLocaleRow := $forceLocale != '' ? $merge([$,$forceLocaleData]) : $;
+
+    $comment := 'We use $forceLocaleRow.{} instead of $.{}, that way rest of transform remains same';
+    $transformed_data :=
+      $forceLocaleRow.{
+        'CPNT_ID': $componentIdPrefix ? $join([$componentIdPrefix, id],'-') : id,
+        'CPNT_TYP_ID': $successFactorsType($types, $),
+        'NOTACTIVE': $.lifecycle.status = 'ACTIVE' ? 'N' : 'Y',
+        'CPNT_TITLE': $formatTitle($titleFormat, $successFactorsType($types, $), 300, $),
+        'DEL_MTH_ID':  $successFactorsDeliveryMethod($types, $),
+        'HTML_CPNT_DESC': $plainString($.localizedMetadata[0].description, 3500),
+        'CMPL_STAT_ID': $successFactorsCompletionStat($types, $),
+        'CREDIT_HRS':  $isoDurationToHours($.duration),
+        'SHOW_IN_CATALOG': $successFactorsShowInCatalog($types, $),
+        'CATALOG_1': $catalog,
+        'APP_ID': $.id,
+        'BUILD_COMPANY': $buildCompany,
+        'CONTENT_ONLINE': 'Y',
+        'LAUNCH_TYPE': 3,
+        'PRIMARY_PARAM': $.link,
+        'ITEM_ONLINE': 'Y',
+        'MODULE_NAME': $formatTitle($titleFormat, $successFactorsType($types, $), 300, $),
+        'THUMBNAIL_URI': imageUrl ? $stripQueryStringandHash(imageUrl) : '',
+        'LAUNCH_IN_A_NEW_BWSR_WINDOW': 'Y',
+        'LOCALE': $successFactorsLocale($.localizedMetadata[0].localeCode),
+        'REV_DTE': $fromMillis($toMillis($.lifecycle.publishDate),'[MNn,*-3]-[D01]-[Y0001] [H01]:[m01]:[s01][z]','-0500'),
+        'CPNT_SRC_ID': 'SKILLSOFT',
+        'CREATE_DTE': $fromMillis($toMillis($.lifecycle.publishDate),'[MNn,*-3]-[D01]-[Y0001] [H01]:[m01]:[s01][z]','-0500'),
+        'CHGBCK_METHOD': 1,
+        'ENABLE_MOBILE_ACCESS': 'Y',
+        'MOBILE_PRIMARY_PARAM': $.link,
+        'DMN_ID': $domainId ? $domainId,
+        'SKIP_CONTENT_STRUCTURE_PAGE': $skipContentPage
+      };
+      $merge([$transformed_data, $extraColumns])
+) 
+
+
