@@ -13,9 +13,8 @@ $.(
     $comment := 'Start of Custom JSONata Functions';
 
     $comment := '*******************************************************';
-    $comment := '* Create a HTML description for the page, each of these';
-    $comment := '* end with a <br/>';
-    $comment := '*     Thumbnail';
+    $comment := '* Create a description for the page, each of these';
+    $comment := '* end with a CR LF';
     $comment := '*     Comma Delimited list of Authors from by';
     $comment := '*     Copyright Publisher and date from publication.publisher';
     $comment := '*     and publication.copyrightYear';
@@ -23,23 +22,24 @@ $.(
     $comment := '*     localizedMetadata[0].description';
     $comment := '*     The content type contentType.displayLabel';
     $comment := '* @param {object} $row - The object to process';
-    $comment := '* @param {string} [$extraHTML=] - extra HTML to include at top of description';
     $comment := '* @returns {string} object';
     $comment := '*******************************************************';
-    $htmldescriptionobject := function($row, $extraHTML){(
-        $thumbnail :=  $row.imageUrl ? '<img src="' & $row.imageUrl & '?width=400" alt="' & $row.localizedMetadata[0].title & '" class="img-responsive">' : '';
-        $contenttype := $row.contentType.displayLabel ? $join(['Type:', $row.contentType.displayLabel],' ') & '<br/>' : '';
-        $by := $count($row.by) = 0 ? '' : 'By: ' & $join($row.by, ', ') & '<br/>';
+    $descriptionobject := function($row){(
+        $contenttype := $row.contentType.displayLabel ? $join(['Type:', $row.contentType.displayLabel],' ')  : '';
+        $by := $count($row.by) = 0 ? '' : 'By: ' & $join($row.by, ', ') ;
         $publisher := $row.publication ? $row.publication.publisher ? $join(['Copyright:', $row.publication.publisher],' ')  : '' : '';
         $year := $row.publication ? $row.publication.copyrightYear ? $join(['(c)', $string($row.publication.copyrightYear)],' ') : '' : '';
-        $copyright := $row.publication ? $join([$publisher, $year],' ') & '<br/>' : '';
-        $isbn := $row.publication ? $row.publication.isbn ? $join(['ISBN:', $row.publication.isbn],' ') & '<br/>' : '' : '';
-        $publication := $row.publication ? $join([$copyright,$isbn]) : '';
-        $description := $row.localizedMetadata[0].description ? '<br/>' & $row.localizedMetadata[0].description & '<br/>' : '';
+        $copyright := $row.publication ? $join([$publisher, $year],' ')  : '';
+        $isbn := $row.publication ? $row.publication.isbn ? $join(['ISBN:', $row.publication.isbn],' ')  : '' : '';
+        $description := $row.localizedMetadata[0].description ? $htmltotext($row.localizedMetadata[0].description)  : '';
 
-        $lastupdated := $row.lifecycle.lastUpdatedDate ? $join(['Last Updated:',$moment($row.lifecycle.lastUpdatedDate).fromNow()],' ') & '<br/>': '';
+        $lastupdated := $row.lifecycle.lastUpdatedDate ? $join(['Last Updated:',$moment($row.lifecycle.lastUpdatedDate).fromNow()],' ') : '';
 
-        $join([$thumbnail,$extraHTML,$contenttype,$by,$publication,$description,$lastupdated])
+        $parts :=  $filter([$contenttype,$by,$copyright,$isbn,$description,$lastupdated], function($v, $i, $a) {
+            $v != ''
+            });
+
+        $join($parts,'\r\n')
     )};
     $comment := 'End of Custom JSONata Functions';
     $comment := '*******************************************************';
@@ -54,13 +54,13 @@ $.(
     $comment := 'Transform the basic data, uses the CONSTANTS specified above';
 
     $required_columns := {
-        'UUID': '',
         'TITLE': '',
         'DESCRIPTION': '',
+        'UUID': '',
         'LAUNCH': '',
         'THUMBNAIL' : '',
         'TYPE': '',
-        'DURATION': '',
+        'MINUTES': '',
         'MODALITY': '',
         'STATUS': '',
         'LANGUAGE': ''
@@ -68,15 +68,15 @@ $.(
 
     $transformed_data := (
         $.{
-            'UUID': id,
             'TITLE': localizedMetadata[0].title,
-            'DESCRIPTION': $htmldescriptionobject($),
+            'DESCRIPTION': $descriptionobject($),
+            'UUID': id,
             'LAUNCH': link,
             'THUMBNAIL': imageUrl,
             'TYPE': contentType ? contentType.displayLabel : '',
-            'DURATION': (
+            'MINUTES': (
                 $duration := duration ? $momentDuration(duration) : $momentDuration('PT0');
-                $formatNumber($floor($duration.asHours()),'#00') & ':' & $formatNumber($floor($duration.minutes()),'00') & ':' & $formatNumber($floor($duration.seconds()),'00')
+                $floor($duration.minutes())
              ),
             'MODALITY': (
                 modalities ? $join(modalities,'|') : ''
