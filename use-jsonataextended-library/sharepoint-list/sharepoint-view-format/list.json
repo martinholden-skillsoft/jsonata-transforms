@@ -1,198 +1,198 @@
 {
-    "schema": "https://developer.microsoft.com/json-schemas/sp/view-formatting.schema.json",
-    "hideSelection": true,
-    "hideColumnHeader": true,
-    "rowFormatter": {
+  "schema": "https://developer.microsoft.com/json-schemas/sp/view-formatting.schema.json",
+  "hideSelection": true,
+  "hideColumnHeader": true,
+  "rowFormatter": {
+    "elmType": "div",
+    "attributes": {
+      "class": "ms-depth-4 ms-bgColor-neutralLighterAlt"
+    },
+    "style": {
+      "padding": "5px",
+      "display": "flex",
+      "flex-grow": "1",
+      "flex-flow": "row wrap",
+      "align-items": "stretch",
+      "align-content": "stretch",
+      "justify-content": "flex-start",
+      "border-radius": "6px",
+      "margin": "10px"
+    },
+    "children": [
+      {
         "elmType": "div",
-        "attributes": {
-            "class": "ms-depth-4 ms-bgColor-neutralLighterAlt"
-        },
+        "attributes": {},
         "style": {
-            "padding": "5px",
-            "display": "flex",
-            "flex-grow": "1",
-            "flex-flow": "row wrap",
-            "align-items": "stretch",
-            "align-content": "stretch",
-            "justify-content": "flex-start",
-            "border-radius": "6px",
-            "margin": "10px"
+          "flex-grow": "2",
+          "max-width": "200px",
+          "width": "200px",
+          "margin": "5px",
+          "text-align": "center"
         },
         "children": [
-            {
-                "elmType": "div",
-                "attributes": {},
-                "style": {
-                    "flex-grow": "2",
-                    "max-width": "200px",
-                    "width": "200px",
-                    "margin": "5px",
-                    "text-align": "center"
-                },
-                "children": [
-                    {
-                        "elmType": "a",
-                        "attributes": {
-                            "href": "[$LAUNCH]",
-                            "target": "_blank",
-                            "class": "ms-fontColor-neutralPrimary ms-fontColor-themePrimary--hover"
-                        },
-                        "style": {
-                            "text-decoration": "none"
-                        },
-                        "children": [
-                            {
-                                "elmType": "img",
-                                "attributes": {
-                                    "src": "=if([$THUMBNAIL] == '', '', [$THUMBNAIL])"
-                                },
-                                "style": {
-                                    "width": "190px",
-                                    "max-width": "190px",
-                                    "border-radius": "6px"
-                                }
-                            }
-                        ]
-                    }
-                ]
+          {
+            "elmType": "a",
+            "attributes": {
+              "href": "[$LAUNCH]",
+              "target": "_blank",
+              "class": "ms-fontColor-neutralPrimary ms-fontColor-themePrimary--hover"
             },
-            {
-                "elmType": "div",
-                "attributes": {},
-                "style": {
-                    "flex-grow": "8",
-                    "max-width": "800px",
-                    "width": "800px",
-                    "margin": "5px"
-                },
-                "children": [
-                    {
-                        "elmType": "a",
-                        "attributes": {
-                            "href": "[$LAUNCH]",
-                            "target": "_blank",
-                            "class": "ms-fontWeight-semibold ms-fontSize-16 ms-fontColor-neutralPrimary ms-fontColor-themePrimary--hover"
-                        },
-                        "style": {
-                            "text-decoration": "none"
-                        },
-                        "children": []
-                    },
-                    {
-                        "elmType": "a",
-                        "attributes": {
-                            "href": "[$LAUNCH]",
-                            "target": "_blank",
-                            "class": "ms-fontWeight-semibold ms-fontSize-16 ms-fontColor-neutralPrimary ms-fontColor-themePrimary--hover"
-                        },
-                        "style": {
-                            "text-decoration": "none"
-                        },
-                        "children": [
-                            {
-                                "elmType": "span",
-                                "attributes": {},
-                                "txtContent": "[$Title]",
-                                "children": []
-                            },
-                            {
-                                "elmType": "span",
-                                "attributes": {
-                                    "iconName": "OpenInNewWindow"
-                                },
-                                "style": {
-                                    "padding-left": "10px"
-                                },
-                                "children": []
-                            }
-                        ]
-                    },
-                    {
-                        "elmType": "div",
-                        "attributes": {},
-                        "txtContent": "[$DESCRIPTION]",
-                        "children": []
-                    }
-                ]
+            "style": {
+              "text-decoration": "none"
             },
-            {
-                "elmType": "div",
-                "attributes": {},
-                "style": {
-                    "flex-grow": "2",
-                    "max-width": "200px",
-                    "width": "200px",
-                    "margin": "5px"
+            "children": [
+              {
+                "elmType": "img",
+                "attributes": {
+                  "src": "=if([$THUMBNAIL] == '', '', [$THUMBNAIL])"
                 },
-                "children": [
-                    {
-                        "elmType": "div",
-                        "attributes": {},
-                        "style": {
-                            "display": "=if([$MODALITY] == '', 'none', 'block')"
-                        },
-                        "children": [
-                            {
-                                "elmType": "span",
-                                "attributes": {
-                                    "class": "ms-fontWeight-semibold"
-                                },
-                                "txtContent": "Modality: ",
-                                "children": []
-                            },
-                            {
-                                "elmType": "span",
-                                "attributes": {},
-                                "txtContent": "[$MODALITY]",
-                                "children": []
-                            }
-                        ]
-                    },
-                    {
-                        "elmType": "div",
-                        "attributes": {},
-                        "style": {
-                            "display": "=if([$DURATION] == '', 'none', 'block')"
-                        },
-                        "children": [
-                            {
-                                "elmType": "span",
-                                "attributes": {
-                                    "class": "ms-fontWeight-semibold"
-                                },
-                                "txtContent": "Duration: ",
-                                "children": []
-                            },
-                            {
-                                "elmType": "span",
-                                "attributes": {},
-                                "txtContent": "=[$DURATION] + ' minutes'",
-                                "children": []
-                            }
-                        ]
-                    },
-                    {
-                        "elmType": "div",
-                        "attributes": {},
-                        "children": [
-                            {
-                                "elmType": "span",
-                                "attributes": {
-                                    "class": "ms-fontWeight-semibold"
-                                },
-                                "txtContent": "Language: ",
-                                "children": []
-                            },
-                            {
-                                "elmType": "span",
-                                "attributes": {},
-                                "txtContent": "[$LANGUAGE]",
-                                "children": []
-                            }
-                        ]
-                    }
-                ]
-            }
+                "style": {
+                  "width": "190px",
+                  "max-width": "190px",
+                  "border-radius": "6px"
+                }
+              }
+            ]
+          }
         ]
-    }
+      },
+      {
+        "elmType": "div",
+        "attributes": {},
+        "style": {
+          "flex-grow": "8",
+          "max-width": "800px",
+          "width": "800px",
+          "margin": "5px"
+        },
+        "children": [
+          {
+            "elmType": "a",
+            "attributes": {
+              "href": "[$LAUNCH]",
+              "target": "_blank",
+              "class": "ms-fontWeight-semibold ms-fontSize-16 ms-fontColor-neutralPrimary ms-fontColor-themePrimary--hover"
+            },
+            "style": {
+              "text-decoration": "none"
+            },
+            "children": []
+          },
+          {
+            "elmType": "a",
+            "attributes": {
+              "href": "[$LAUNCH]",
+              "target": "_blank",
+              "class": "ms-fontWeight-semibold ms-fontSize-16 ms-fontColor-neutralPrimary ms-fontColor-themePrimary--hover"
+            },
+            "style": {
+              "text-decoration": "none"
+            },
+            "children": [
+              {
+                "elmType": "span",
+                "attributes": {},
+                "txtContent": "[$Title]",
+                "children": []
+              },
+              {
+                "elmType": "span",
+                "attributes": {
+                  "iconName": "OpenInNewWindow"
+                },
+                "style": {
+                  "padding-left": "10px"
+                },
+                "children": []
+              }
+            ]
+          },
+          {
+            "elmType": "div",
+            "attributes": {},
+            "txtContent": "[$DESCRIPTION]",
+            "children": []
+          }
+        ]
+      },
+      {
+        "elmType": "div",
+        "attributes": {},
+        "style": {
+          "flex-grow": "2",
+          "max-width": "200px",
+          "width": "200px",
+          "margin": "5px"
+        },
+        "children": [
+          {
+            "elmType": "div",
+            "attributes": {},
+            "style": {
+              "display": "=if([$MODALITY] == '', 'none', 'block')"
+            },
+            "children": [
+              {
+                "elmType": "span",
+                "attributes": {
+                  "class": "ms-fontWeight-semibold"
+                },
+                "txtContent": "Modality: ",
+                "children": []
+              },
+              {
+                "elmType": "span",
+                "attributes": {},
+                "txtContent": "[$MODALITY]",
+                "children": []
+              }
+            ]
+          },
+          {
+            "elmType": "div",
+            "attributes": {},
+            "style": {
+              "display": "=if([$MINUTES] == '', 'none', 'block')"
+            },
+            "children": [
+              {
+                "elmType": "span",
+                "attributes": {
+                  "class": "ms-fontWeight-semibold"
+                },
+                "txtContent": "Duration: ",
+                "children": []
+              },
+              {
+                "elmType": "span",
+                "attributes": {},
+                "txtContent": "=[$MINUTES] + ' minutes'",
+                "children": []
+              }
+            ]
+          },
+          {
+            "elmType": "div",
+            "attributes": {},
+            "children": [
+              {
+                "elmType": "span",
+                "attributes": {
+                  "class": "ms-fontWeight-semibold"
+                },
+                "txtContent": "Language: ",
+                "children": []
+              },
+              {
+                "elmType": "span",
+                "attributes": {},
+                "txtContent": "[$LANGUAGE]",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
