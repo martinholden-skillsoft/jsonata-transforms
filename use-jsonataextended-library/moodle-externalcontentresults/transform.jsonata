@@ -2,9 +2,10 @@ $.(
     $comment := '*******************************************************';
     $comment := '*******************************************************';
     $comment := 'TRANSFORM FOR MOODLE 3.x Percipio Course Results Import';
+    $comment := 'Using a calculated xAPi Activity ID';
     $comment := 'See https://moodle.org/plugins/tool_uploadexternalcontentresults';
     $comment := 'Author: martinholden-skillsoft';
-    $comment := 'Date: 21-AUG-2020';
+    $comment := 'Date: 27-JAN-2021';
     $comment := 'Dependency: Uses functions from https://www.npmjs.com/package/jsonata-extended';
     $comment := '*******************************************************';
     $comment := '*******************************************************';
@@ -12,9 +13,6 @@ $.(
     $comment := '*******************************************************';
     $comment := '*******************************************************';
     $comment := 'START OF TRANSFORM';
-
-    $comment := '*******************************************************';
-    $comment := 'Transform the basic data, uses the CONSTANTS specified above';
 
     $comment := 'The list of required columns in order as per https://github.com/lushonline/moodle-tool_uploadexternalcontentresults/wiki/Format-of-Import-File';
     $comment := 'as at date of this transform.';
@@ -27,7 +25,27 @@ $.(
 
     $transformed_data := (
         $.{
-            'COURSE_IDNUMBER': contentUuid,
+            'COURSE_IDNUMBER': (
+                $percipiotype := $lookup([{
+                    'video': 'video',
+                    'course': 'course',
+                    'channel': 'channel',
+                    'custom channel':'channel',
+                    'journey': 'journey',
+                    'book': 'book',
+                    'book review': 'book',
+                    'audiobook': 'audiobook',
+                    'book summary': 'book',
+                    'audio summary': 'audiobook',
+                    'testprep': 'lc',
+                    'practice lab': 'lc',
+                    'linked content': 'lc'
+                    }
+                ], ($lowercase(contentType)));
+
+                $percipiotype := $percipiotype ? $percipiotype : 'UNKNOWN';
+                $trim('https://xapi.percipio.com/xapi/' & $percipiotype & '/' & contentUuid)
+            ),
             'USER_USERNAME': userId,
             'USER_COMPLETED': (
                 $comment := 'Channel and Custom Channel types are always marked completed';
