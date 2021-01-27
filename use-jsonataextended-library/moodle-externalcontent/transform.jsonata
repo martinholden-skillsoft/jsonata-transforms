@@ -4,7 +4,7 @@ $.(
     $comment := 'TRANSFORM FOR MOODLE 3.x Percipio Course Import';
     $comment := 'See https://moodle.org/plugins/tool_uploadexternalcontent';
     $comment := 'Author: martinholden-skillsoft';
-    $comment := 'Date: 24-AUG-2020';
+    $comment := 'Date: 27-JAN-2021';
     $comment := 'Dependency: Uses functions from https://www.npmjs.com/package/jsonata-extended';
     $comment := '*******************************************************';
     $comment := '*******************************************************';
@@ -146,10 +146,12 @@ $.(
         $isbn := publication ? publication.isbn ? $join(['ISBN:', publication.isbn],' ') & $myeol : '' : '';
 
         $publication := publication ? $join([$copyright,$isbn]) : '';
-        $plaindesc := $plainstring(localizedMetadata[0].description);
+        $plaindesc := $plainstring(localizedMetadata[0].description) & $myeol;
         $contenttype := contentType.displayLabel ? $join(['Type:',contentType.displayLabel],' ')  & $myeol : '';
 
-        $truncate($join([$extraText,$contenttype,$by,$publication,$plaindesc]), {"length": $maxlength, "omission": "..."});
+        $lastupdated := lifecycle.lastUpdatedDate ? $join(['Last Updated:',$moment(lifecycle.lastUpdatedDate).fromNow()],' ') & $myeol : '';
+
+        $truncate($join([$extraText,$contenttype,$by,$publication,$plaindesc,$lastupdated]), {"length": $maxlength, "omission": "..."});
     )};
 
 
@@ -231,8 +233,9 @@ $.(
         $publication := $row.publication ? $join([$copyright,$isbn]) : '';
         $description := $row.localizedMetadata[0].description ? '<br/>' & $row.localizedMetadata[0].description & '<br/>' : '';
 
+        $lastupdated := $row.lifecycle.lastUpdatedDate ? '<br/>' & $join(['Last Updated:',$moment($row.lifecycle.lastUpdatedDate).fromNow()],' ') & '<br/>': '';
 
-        $join([$thumbnail,$extraHTML,$contenttype,$by,$publication,$description,$launchlink])
+        $join([$thumbnail,$extraHTML,$contenttype,$by,$publication,$description,$lastupdated,$launchlink])
     )};
     $comment := 'End of Custom JSONata Functions';
     $comment := '*******************************************************';
@@ -273,7 +276,7 @@ $.(
 
     $transformed_data := (
         $.{
-            'COURSE_IDNUMBER': id ? id : '',
+            'COURSE_IDNUMBER': xapiActivityId ? xapiActivityId : '',
             'COURSE_SHORTNAME': localizedMetadata[0].title ? $join([$metadatatitle($commonIncludeContentTypeInTitle, $commonIncludeTechnologyDetailsInTitle, 215),'(' & id &')'],' ') : '',
             'COURSE_FULLNAME': localizedMetadata[0].title ? $metadatatitle($commonIncludeContentTypeInTitle, $commonIncludeTechnologyDetailsInTitle, 254) : '',
             'COURSE_SUMMARY': (
@@ -321,19 +324,7 @@ $.(
                 $extraHTML := $join(['Language:',$languageTag],' ') & '<br/>';
                 $moodledescriptionobject($, $extraHTML)
             ),
-            'EXTERNAL_MARKCOMPLETEEXTERNALLY': (
-                $external := $lookup([{
-                    'audiobook': 1,
-                    'book': 1,
-                    'channel': 1,
-                    'course': 1,
-                    'linked_content': 1,
-                    'video': 1,
-                    'journey': 1
-                }], $lowercase(contentType.percipioType));
-
-                $external ? $external : 0
-            )
+            'EXTERNAL_MARKCOMPLETEEXTERNALLY': 1
           }
     );
 
