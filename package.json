@@ -1,6 +1,6 @@
 {
 	"name": "jsonata-transforms",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Various JSONata transforms",
 	"main": "app.js",
 	"scripts": {
